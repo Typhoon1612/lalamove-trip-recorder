@@ -69,7 +69,7 @@
     {{-- Section header --}}
     <div class="flex items-center justify-between mb-4">
         <h2 class="text-orange-500 text-xs font-bold tracking-widest uppercase">Recent Trips</h2>
-        <a href="#"
+        <a href="{{ route('trips.export') }}"
            class="flex items-center gap-1.5 text-orange-400 hover:text-orange-300 text-xs font-semibold transition-colors">
             Export CSV
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -84,13 +84,15 @@
         <div class="relative bg-[#1d1008] rounded-2xl border border-orange-900/20 p-4 md:p-5">
 
             {{-- Delete button --}}
-            <button type="button"
-                    class="absolute -top-3 -right-3 w-7 h-7 rounded-full bg-red-600 hover:bg-red-500 flex items-center justify-center shadow-lg transition-colors z-10"
-                    aria-label="Delete trip">
-                <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
-                </svg>
-            </button>
+            <form action="{{ route('trips.destroy', $trip['id']['S']) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this trip?');">
+                @csrf
+
+                @method('DELETE')
+
+                <button type="submit" class="text-red-500 hover:text-red-700 font-bold px-2 py-1">
+                    Delete
+                </button>
+            </form>
 
             {{-- ── Desktop top row: badge + date ──────────────────────── --}}
             <div class="hidden md:flex items-center gap-3 mb-2">

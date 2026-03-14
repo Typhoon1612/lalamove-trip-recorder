@@ -16,7 +16,7 @@
 
 {{-- ── Main Form Card ───────────────────────────────────────────────────── --}}
 <div class="bg-[#1d1008] rounded-2xl border border-orange-900/20 overflow-hidden">
-    <form action="#" method="POST">
+    <form action="{{ route('trips.store') }}" method="POST">
         @csrf
 
         {{-- ── Section 1: Time & Order Details ─────────────────────────── --}}
@@ -107,7 +107,7 @@
                 <div class="space-y-1.5">
                     <label class="block text-orange-100/70 text-sm font-medium">Distance to Pickup (km)</label>
                     <div class="flex items-center bg-[#271609] border border-[#3d2010] rounded-xl px-3 focus-within:border-orange-500/70 focus-within:ring-1 focus-within:ring-orange-500/30 transition-all">
-                        <input type="number" name="pickup_distance" value="0.0" step="0.1" min="0"
+                        <input type="number" name="distance_to_pickup" value="0.0" step="0.1" min="0"
                                class="bg-transparent flex-1 py-3 text-white text-sm focus:outline-none">
                         <span class="text-orange-400/60 text-sm font-medium">km</span>
                     </div>
