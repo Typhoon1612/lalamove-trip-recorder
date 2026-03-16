@@ -15,3 +15,6 @@ Route::post('/trips/store', [TripController::class, 'store'])->name('trips.store
 Route::delete('/trips/{id}', [TripController::class, 'destroy'])->name('trips.destroy');
 
 Route::get('/trips/export', [TripController::class, 'export'])->name('trips.export');
+
+// Keep-alive ping for Render free tier (prevents spin-down)
+Route::get('/ping', fn() => response('pong', 200));

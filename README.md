@@ -11,13 +11,14 @@ A driver portal built with **Laravel 12** and **AWS DynamoDB** for Lalamove driv
 
 ## Tech Stack
 
-| Layer     | Technology                         |
-| --------- | ---------------------------------- |
-| Framework | Laravel 12 (PHP 8.2+)              |
-| Database  | AWS DynamoDB                       |
-| Frontend  | Blade, Tailwind CSS, Alpine.js     |
-| Build     | Vite                               |
-| Server    | Laravel Herd / `php artisan serve` |
+| Layer      | Technology                         |
+| ---------- | ---------------------------------- |
+| Framework  | Laravel 12 (PHP 8.2+)              |
+| Database   | AWS DynamoDB                       |
+| Frontend   | Blade, Tailwind CSS, Alpine.js     |
+| Build      | Vite                               |
+| Server     | Laravel Herd / `php artisan serve` |
+| Deployment | Docker + Render                    |
 
 ## Prerequisites
 
@@ -103,6 +104,7 @@ resources/views/
 | POST   | `/trips/store`  | `TripController@store`   | Save a new trip     |
 | DELETE | `/trips/{id}`   | `TripController@destroy` | Delete a trip       |
 | GET    | `/trips/export` | `TripController@export`  | Download CSV export |
+| GET    | `/ping`         | _(closure)_              | Keep-alive endpoint |
 
 ## DynamoDB Item Schema
 
@@ -118,6 +120,65 @@ resources/views/
 | `delivery_distance`  | N    | Delivery distance in km     |
 | `gross_fare`         | N    | Gross fare in RM            |
 | `tolls_parking`      | N    | Tolls & parking costs in RM |
+| `status`             | S    | Always `COMPLETED`          |
+
+## Deployment (Render + Docker)
+
+The app ships with a `Dockerfile` for container-based deployment on [Render](https://render.com).
+
+### Environment variables to set in Render
+
+Set these in your Render service **Environment** tab:
+
+| Variable                | Where      | Value                                        |
+| ----------------------- | ---------- | -------------------------------------------- |
+| `APP_KEY`               | Secret     | Output of `php artisan key:generate --show`  |
+| `APP_URL`               | Variable   | `https://your-app.onrender.com`              |
+| `APP_ENV`               | Variable   | `production`                                 |
+| `APP_DEBUG`             | Variable   | `false`                                      |
+| `AWS_ACCESS_KEY_ID`     | **Secret** | Your IAM access key                          |
+| `AWS_SECRET_ACCESS_KEY` | **Secret** | Your IAM secret key                          |
+| `AWS_DEFAULT_REGION`    | Variable   | `ap-southeast-1`                             |
+| `DYNAMODB_TABLE`        | Variable   | `lalamove_trips`                             |
+
+> **Never commit real AWS credentials** to the repository. Use Render's secret environment variables or AWS IAM roles.
+
+### Render service settings
+
+| Setting       | Value                                   |
+| ------------- | --------------------------------------- |
+| Runtime       | Docker                                  |
+| Dockerfile    | `./Dockerfile`                          |
+| Start command | _(defined in Dockerfile `CMD`)_         |
+| Port          | `10000` (or `$PORT`)                    |
+
+### Keep-alive scheduler (prevent free-tier spin-down)
+
+The Laravel scheduler pings `/ping` every 14 minutes to keep the Render free-tier instance awake.  
+To enable it, add a **Background Worker** service on Render pointing to the same repo with the start command:
+
+```bash
+php artisan schedule:work
+```
+
+Or run it alongside the web process in a single service:
+
+```bash
+php artisan schedule:work & php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
+```
+
+### Build & run locally with Docker
+
+```bash
+docker build -t lalamove-trip-recorder .
+docker run -p 8000:10000 \
+  -e APP_KEY=your-app-key \
+  -e AWS_ACCESS_KEY_ID=your-key \
+  -e AWS_SECRET_ACCESS_KEY=your-secret \
+  -e AWS_DEFAULT_REGION=ap-southeast-1 \
+  -e DYNAMODB_TABLE=lalamove_trips \
+  lalamove-trip-recorder
+```
 
 ## License
 
