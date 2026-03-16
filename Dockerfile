@@ -33,6 +33,7 @@ RUN npm install && npm run build && rm -f public/hot
 # 10. Use file-based session & cache — no DB tables needed for these
 ENV SESSION_DRIVER=file
 ENV CACHE_STORE=file
+ENV APP_ENV=production
 
 # 11. Create the SQLite database file and fix storage permissions
 RUN touch database/database.sqlite && \
