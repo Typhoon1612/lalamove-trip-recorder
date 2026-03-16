@@ -25,32 +25,43 @@ class TripController extends Controller
             'TableName' => env('DYNAMODB_TABLE'),
         ]);
 
-        // 3. Put all the tickets into a neat list
-        $trips = $result['Items'] ?? []; // If there are no items, we get an empty list instead of an error
+        // 3. Put all the tickets into a neat list and map them to view-friendly arrays
+        $items = $result['Items'] ?? []; // raw DynamoDB items
 
-        // 4. Set up our blank calculators (starting at zero)
-        $totalTrips = count($trips);
+        $formattedTrips = [];
         $totalEarning = 0;
         $totalTolls = 0;
 
-        // 5. Look at every single ticket one by one to do the math!
-        foreach ($trips as $trip) {
-            // DynamoDB stores numbers inside an 'Nn' label.
-            // We use floatval () to make sure PHP treats it as a decimal math number.
-            $grossFare = floatval($trip['gross_fare']['N'] ?? 0);
-            $tolls = floatval($trip['tolls_parking']['N'] ?? 0);
+        foreach ($items as $item) {
+            $grossFare = floatval($item['gross_fare']['N'] ?? 0);
+            $tolls = floatval($item['tolls_parking']['N'] ?? 0);
 
-            // Add this tisket's money to our running totals
+            $formatted = [
+                'id' => $item['id']['S'] ?? '',
+                'status' => $item['status']['S'] ?? 'COMPLETED',
+                'date' => $item['trip_date']['S'] ?? '',
+                'time' => $item['trip_time']['S'] ?? '',
+                'order_id' => $item['order_id']['S'] ?? '',
+                'pickup' => $item['pickup_area']['S'] ?? '',
+                'dropoff' => $item['dropoff_area']['S'] ?? '',
+                'distance_to_pickup' => floatval($item['distance_to_pickup']['N'] ?? 0),
+                'delivery_distance' => floatval($item['delivery_distance']['N'] ?? 0),
+                'gross_fare' => $grossFare,
+                'tolls_parking' => $tolls,
+                'net_profit' => $grossFare - $tolls,
+            ];
+
+            $formattedTrips[] = $formatted;
+
             $totalEarning += $grossFare;
             $totalTolls += $tolls;
         }
 
-        // 6. Calculate Net Profit (Earnings minus Tolls)
+        $totalTrips = count($formattedTrips);
         $totalNetProfit = $totalEarning - $totalTolls;
 
-        // 7. Hand all the tickets and the math answer to the visual page!
         return view('trips.index', [
-            'trips' => $trips,
+            'trips' => $formattedTrips,
             'summary' => [
                 'total_earnings' => $totalEarning,
                 'net_profit'     => $totalNetProfit,
@@ -72,6 +83,7 @@ class TripController extends Controller
             'delivery_distance' => 'required|numeric',
             'gross_fare' => 'required|numeric',
             'tolls_parking' => 'required|numeric',
+            'status' => 'required|in:COMPLETED',
         ]);
 
         // 2. Wake up the AWS Translator 
@@ -89,6 +101,7 @@ class TripController extends Controller
             'TableName' => env('DYNAMODB_TABLE'),
             'Item' => [
                 'id' => ['S' => Str::uuid()->toString()], // Unique ID for each trip
+                'status' => ['S' => 'COMPLETED'],
                 'trip_date' => ['S' => $data['trip_date']],
                 'trip_time' => ['S' => $data['trip_time']],
                 'order_id' => ['S' => $data['order_id']],

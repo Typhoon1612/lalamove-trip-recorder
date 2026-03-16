@@ -81,33 +81,42 @@
     {{-- Trip cards --}}
     <div class="space-y-3">
         @foreach ($trips as $trip)
+        @php
+            $isCompleted = $trip['status'] === 'COMPLETED';
+            $badgeClass = $isCompleted
+                ? 'bg-green-500/15 text-green-400 border-green-500/30'
+                : 'bg-red-500/15 text-red-400 border-red-500/30';
+        @endphp
         <div class="relative bg-[#1d1008] rounded-2xl border border-orange-900/20 p-4 md:p-5">
 
-            {{-- Delete button --}}
-            <form action="{{ route('trips.destroy', $trip['id']['S']) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this trip?');">
+            {{-- Delete button: absolute X icon in the top-right corner --}}
+            <form action="{{ route('trips.destroy', $trip['id']) }}" method="POST"
+                  onsubmit="return confirm('Are you sure you want to delete this trip?');"
+                  class="absolute top-3 right-3">
                 @csrf
-
                 @method('DELETE')
-
-                <button type="submit" class="text-red-500 hover:text-red-700 font-bold px-2 py-1">
-                    Delete
+                <button type="submit"
+                        class="w-7 h-7 rounded-full bg-red-500/20 hover:bg-red-500/40 text-red-400 hover:text-red-300 flex items-center justify-center transition-colors cursor-pointer">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
                 </button>
             </form>
 
             {{-- ── Desktop top row: badge + date ──────────────────────── --}}
-            <div class="hidden md:flex items-center gap-3 mb-2">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-green-500/15 text-green-400 border border-green-500/30 uppercase tracking-wider">
+            <div class="hidden md:flex items-center gap-3 mb-2 pr-9">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider {{ $badgeClass }}">
                     {{ $trip['status'] }}
                 </span>
                 <span class="text-orange-100/40 text-xs">{{ $trip['date'] }} &bull; {{ $trip['time'] }}</span>
             </div>
 
             {{-- ── Desktop: order heading ─────────────────────────────── --}}
-            <p class="hidden md:block text-white font-bold mb-3 pr-6">Order #{{ $trip['order_id'] }}</p>
+            <p class="hidden md:block text-white font-bold mb-3 pr-9">Order #{{ $trip['order_id'] }}</p>
 
-            {{-- ── Mobile top row: badge + order ID ──────────────────── --}}
-            <div class="flex md:hidden items-center justify-between mb-3 pr-6">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-green-500/15 text-green-400 border border-green-500/30 uppercase tracking-wider">
+            {{-- ── Mobile top row: badge + order ID ───────────────────── --}}
+            <div class="flex md:hidden items-center justify-between mb-3 pr-9">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider {{ $badgeClass }}">
                     {{ $trip['status'] }}
                 </span>
                 <span class="text-orange-100/40 text-xs font-medium">#{{ $trip['order_id'] }}</span>

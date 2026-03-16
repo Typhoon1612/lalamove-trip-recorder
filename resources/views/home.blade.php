@@ -67,6 +67,20 @@
                 </div>
                 <p class="text-orange-400/40 text-xs">Found in your Lalamove app order history</p>
             </div>
+
+            {{-- Trip Status (fixed) --}}
+            <div class="space-y-1.5">
+                <label class="block text-orange-100/70 text-sm font-medium">Trip Status</label>
+                <div class="w-full flex items-center gap-2.5 bg-[#271609] border border-[#3d2010] rounded-xl px-3 py-3">
+                    <span class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 bg-green-500/20">
+                        <svg class="w-3.5 h-3.5 text-green-400" viewBox="0 0 24 24" fill="currentColor">
+                            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd"/>
+                        </svg>
+                    </span>
+                    <span class="text-sm font-medium text-green-400">Completed</span>
+                </div>
+                <input type="hidden" name="status" value="COMPLETED">
+            </div>
         </div>
 
         <div class="h-px bg-orange-900/20 mx-5 md:mx-6"></div>
