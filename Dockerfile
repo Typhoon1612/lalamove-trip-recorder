@@ -30,8 +30,19 @@ RUN composer install --no-dev --optimize-autoloader
 # 9. Run the Javascript/Tailwind installation command
 RUN npm install && npm run build
 
-# 10. Open the port so Render can send visitors in
+# 10. Use file-based session & cache — no DB tables needed for these
+ENV SESSION_DRIVER=file
+ENV CACHE_STORE=file
+
+# 11. Create the SQLite database file and fix storage permissions
+RUN touch database/database.sqlite && \
+    mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views && \
+    chmod -R 775 storage bootstrap/cache
+
+# 12. Open the port so Render can send visitors in
 EXPOSE 10000
 
-# 11. Start the Laravel Traffic Cop!
-CMD php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
+# 13. Clear cached config, run migrations, then start Laravel
+CMD php artisan config:clear && \
+    php artisan migrate --force && \
+    php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
