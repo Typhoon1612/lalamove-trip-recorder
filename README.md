@@ -130,27 +130,27 @@ The app ships with a `Dockerfile` for container-based deployment on [Render](htt
 
 Set these in your Render service **Environment** tab:
 
-| Variable                | Where      | Value                                        |
-| ----------------------- | ---------- | -------------------------------------------- |
-| `APP_KEY`               | Secret     | Output of `php artisan key:generate --show`  |
-| `APP_URL`               | Variable   | `https://your-app.onrender.com`              |
-| `APP_ENV`               | Variable   | `production`                                 |
-| `APP_DEBUG`             | Variable   | `false`                                      |
-| `AWS_ACCESS_KEY_ID`     | **Secret** | Your IAM access key                          |
-| `AWS_SECRET_ACCESS_KEY` | **Secret** | Your IAM secret key                          |
-| `AWS_DEFAULT_REGION`    | Variable   | `ap-southeast-1`                             |
-| `DYNAMODB_TABLE`        | Variable   | `lalamove_trips`                             |
+| Variable                | Where      | Value                                       |
+| ----------------------- | ---------- | ------------------------------------------- |
+| `APP_KEY`               | Secret     | Output of `php artisan key:generate --show` |
+| `APP_URL`               | Variable   | `https://your-app.onrender.com`             |
+| `APP_ENV`               | Variable   | `production`                                |
+| `APP_DEBUG`             | Variable   | `false`                                     |
+| `AWS_ACCESS_KEY_ID`     | **Secret** | Your IAM access key                         |
+| `AWS_SECRET_ACCESS_KEY` | **Secret** | Your IAM secret key                         |
+| `AWS_DEFAULT_REGION`    | Variable   | `ap-southeast-1`                            |
+| `DYNAMODB_TABLE`        | Variable   | `lalamove_trips`                            |
 
 > **Never commit real AWS credentials** to the repository. Use Render's secret environment variables or AWS IAM roles.
 
 ### Render service settings
 
-| Setting       | Value                                   |
-| ------------- | --------------------------------------- |
-| Runtime       | Docker                                  |
-| Dockerfile    | `./Dockerfile`                          |
-| Start command | _(defined in Dockerfile `CMD`)_         |
-| Port          | `10000` (or `$PORT`)                    |
+| Setting       | Value                           |
+| ------------- | ------------------------------- |
+| Runtime       | Docker                          |
+| Dockerfile    | `./Dockerfile`                  |
+| Start command | _(defined in Dockerfile `CMD`)_ |
+| Port          | `10000` (or `$PORT`)            |
 
 ### Keep-alive scheduler (prevent free-tier spin-down)
 
