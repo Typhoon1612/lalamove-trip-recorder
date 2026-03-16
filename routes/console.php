@@ -12,4 +12,4 @@ Artisan::command('inspire', function () {
 // Ping the app every 14 minutes to prevent Render free-tier spin-down
 Schedule::call(function () {
     Http::timeout(10)->get(config('app.url') . '/ping');
-})->everyFourteenMinutes();
+})->cron('*/14 * * * *');
