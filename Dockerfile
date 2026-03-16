@@ -27,8 +27,8 @@ COPY . .
 # 8. Run the PHP installation command
 RUN composer install --no-dev --optimize-autoloader
 
-# 9. Run the Javascript/Tailwind installation command
-RUN npm install && npm run build
+# 9. Run the Javascript/Tailwind installation command and remove the dev-mode hot file
+RUN npm install && npm run build && rm -f public/hot
 
 # 10. Use file-based session & cache — no DB tables needed for these
 ENV SESSION_DRIVER=file
