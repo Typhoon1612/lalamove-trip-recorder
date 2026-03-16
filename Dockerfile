@@ -1,5 +1,5 @@
 # 1. Start with a blank computer that has PHP 8.2 installed
-FROM php:8.2-cli
+FROM php:8.4-cli
 
 # 2. Install the necessary system tools (like ZIP extractors and downloaders)
 RUN apt-get update -y && apt-get install -y \
